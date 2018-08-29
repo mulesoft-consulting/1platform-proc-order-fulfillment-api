@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:notification-apispec="http://www.mulesoft.org/schema/mule/notification-apispec" xmlns:order-apispec="http://www.mulesoft.org/schema/mule/order-apispec" xmlns:product-api="http://www.mulesoft.org/schema/mule/product-api" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/notification-apispec http://www.mulesoft.org/schema/mule/notification-apispec/current/mule-notification-apispec.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/order-apispec http://www.mulesoft.org/schema/mule/order-apispec/current/mule-order-apispec.xsd http://www.mulesoft.org/schema/mule/product-api http://www.mulesoft.org/schema/mule/product-api/current/mule-product-api.xsd">
+    <http:listener-config name="order-fulfillment-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8082" protocol="HTTPS">
+            <tls:context>
+                <tls:key-store type="jks" path="keystore.jks" keyPassword="${keystore.password}" password="${keystore.password}" />
+            </tls:context>
+        </http:listener-connection>
+    </http:listener-config>
+    <apikit:config name="order-fulfillment-api-config" raml="order-fulfillment-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="f0c89c0b-cb1d-41da-931b-148e75ff00a4" file="mule-app.properties" />
+    <notification-apispec:config name="Notification_API_Spec_Config" doc:name="Notification API Spec Config" doc:id="f102fe55-eb86-4dcd-b12d-9967d5d156f0" property_host="${notification.dapi.url}" property_basePath="/api" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" />
+    <order-apispec:config name="Order_API_Spec_Config" doc:name="Order API Spec Config" doc:id="09eb0b84-afa9-40c7-860b-d36703f91a99" property_host="${order.dapi.url}" property_basePath="/mocks/121e0711-4f87-44c3-b3e0-75afa2d341c0/v1" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" />
+    <product-api:config name="Product_API_Config" doc:name="Product API Config" doc:id="8288bc9f-f12c-4347-ab80-ba79f04020ca" property_host="${product.dapi.url}" property_basePath="/mocks/48c0df7a-77c6-4b84-8d60-a93ce6bc8d41/v1" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" />
+    <flow name="order-fulfillment-api-main">
+        <http:listener config-ref="order-fulfillment-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="order-fulfillment-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="order-fulfillment-api-console">
+        <http:listener config-ref="order-fulfillment-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="order-fulfillment-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\shipments\(id):application\json:order-fulfillment-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.id</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  meta: {
+    messages: [
+      {
+        severity: "INFO",
+        code: "200",
+        description: "OK",
+        link: {
+          href: "http://localhost",
+          title: "All good!"
+        }
+      }
+    ],
+    totalItems: 3,
+    pagingOffset: 1,
+    pagingLimit: 15
+  },
+  links: {
+    self: {
+      href: "http://localhost/currentPage",
+      title: "Current page"
+    },
+    first: {
+      href: "http://localhost/firstPage",
+      title: "First Page"
+    },
+    prev: {
+      href: "http://localhost/previousPage",
+      title: "Previous page"
+    },
+    next: {
+      href: "http://localhost/nextPage",
+      title: "Next Page"
+    },
+    last: {
+      href: "http://localhost/lastPage",
+      title: "Last Page"
+    }
+  },
+  messages: [
+    {
+      itemId: "2222222",
+      severity: "INFO",
+      code: "201",
+      description: "shipment record created"
+    }, 
+    {
+      itemId: "3333333",
+      severity: "INFO",
+      code: "202",
+      description: "Create shipment request accepted"
+    }, 
+    {
+      itemId: "111111",
+      severity: "INFO",
+      code: "409",
+      description: "Duplicate shipment record exists"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="put:\payments\(id):application\json:order-fulfillment-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.id</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  meta: {
+    messages: [
+      {
+        severity: "INFO",
+        code: "200",
+        description: "OK",
+        link: {
+          href: "http://localhost",
+          title: "All good!"
+        }
+      }
+    ],
+    totalItems: 3,
+    pagingOffset: 1,
+    pagingLimit: 15
+  },
+  links: {
+    self: {
+      href: "http://localhost/currentPage",
+      title: "Current page"
+    },
+    first: {
+      href: "http://localhost/firstPage",
+      title: "First Page"
+    },
+    prev: {
+      href: "http://localhost/previousPage",
+      title: "Previous page"
+    },
+    next: {
+      href: "http://localhost/nextPage",
+      title: "Next Page"
+    },
+    last: {
+      href: "http://localhost/lastPage",
+      title: "Last Page"
+    }
+  },
+  messages: [
+    {
+      itemId: "2222222",
+      severity: "INFO",
+      code: "201",
+      description: "payment record created"
+    }, 
+    {
+      itemId: "3333333",
+      severity: "INFO",
+      code: "202",
+      description: "Create payment request accepted"
+    }, 
+    {
+      itemId: "111111",
+      severity: "INFO",
+      code: "409",
+      description: "Duplicate payment record exists"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\shipments\(id):order-fulfillment-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.id</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\shipments\(id):order-fulfillment-api-config" />
+    </flow>
+	<flow name="get:\payments\(id):order-fulfillment-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.id</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\payments\(id):order-fulfillment-api-config" />
+    </flow>
+    <flow name="get:\orders:order-fulfillment-api-config">
+        <order-apispec:get-orders doc:name="Get orders" doc:id="04aa7a0e-4316-4dca-828d-57bbecf5a94b" config-ref="Order_API_Spec_Config" customer-id="#[attributes.queryParams.customerId]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c6c43b57-8ea6-4c2f-9f27-715becddf240" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+	<flow name="get:\orders\(id):order-fulfillment-api-config">
+        <order-apispec:get doc:name="Get" doc:id="8850ba56-a4f4-485e-97a3-13c3a0cf7f54" id="#[attributes.uriParams.id]" config-ref="Order_API_Spec_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="c0a1cf6f-9a4a-4014-9c71-3eb6935908d5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+    <flow name="post:\orders:application\json:order-fulfillment-api-config">
+    		<ee:transform doc:name="Create an empty arrays" doc:id="719920bb-f0ee-41df-b7a8-581d4296f031">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="notifications"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+                <ee:set-variable variableName="messages"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <foreach doc:name="For Each Order" doc:id="c9b5ddf6-ecd1-47e3-9657-560839598a73" collection="#[payload]">
+            <try doc:name="Try" doc:id="bdc47c09-3f76-4680-a250-a4ba40f851f5">
+                <set-variable value="#[{'customerId': payload.customerId as String, 'email': payload.email.address}]" doc:name="Set Current Customer" doc:id="3a718720-f6f4-4731-8a63-7d18a24f09b6" variableName="customer" />
+                <set-variable value="#[[]]" doc:name="Create empty orderItems array" doc:id="fdab7476-2408-4199-aabd-e2ca84c115d5" variableName="orderItems" />
+                <foreach doc:name="For Each orderItem" doc:id="ec21fb63-55c2-44e5-94e5-63a72ac8a0d7" collection="#[payload.orderItems]">
+                    <product-api:get doc:name="Get" doc:id="d65eee92-1afb-4e7f-98aa-ee90bce39cc5" id="#[payload.product.id]" target="currentProduct" config-ref="Product_API_Config" />
+                    <ee:transform doc:name="Transform Message" doc:id="0dacb70c-32ba-4266-aa6d-cb10a76d7ac9">
+                        <ee:message />
+                        <ee:variables>
+                            <ee:set-variable variableName="orderItems"><![CDATA[%dw 2.0
+output application/java
+---
+vars.orderItems ++
+[
+	{
+		delivery: {
+			method: payload.delivery.method	
+		},
+		product: {
+			name: vars.currentProduct.name,
+			id: vars.currentProduct.id
+		},
+		quantity: {
+			ordered: payload.quantity.ordered
+		},
+		sourceSystem: vars.currentProduct.sourceSystem,
+		orderLine: payload.orderLine,
+		pricing: {
+			totalAmount: vars.currentProduct.pricing.listPrice default 0 * payload.quantity.ordered as Number,
+			itemAmount: vars.currentProduct.pricing.listPrice,
+			discountPct: payload.pricing.discountPct
+		}
+	}
+]]]></ee:set-variable>
+                        </ee:variables>
+                    </ee:transform>
+                </foreach>
+                <ee:transform doc:name="Create Order Body" doc:id="c8cb6ddc-fff0-4c6f-956b-93be3f1a4fd1">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+[
+	{
+		shippingCost: payload.shippingCost,
+		sourceSystem: payload.sourceSystem,
+		payments: payload.payments,
+		subTotal: payload.subTotal,
+		orderItems: vars.orderItems,
+		totalAmount: payload.totalAmount,
+		deliveryAddress: payload.deliveryAddress,
+		customerId: vars.customer.customerId,
+		currency: payload.currency,
+		billingAddress: payload.billingAddress,
+		taxAmount: payload.taxAmount,
+		trackingNumber: uuid() as String,
+		deliveryStatus: payload.deliveryStatus,
+		email: payload.email,
+		status: payload.status
+	}
+]]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables />
+                </ee:transform>
+                <order-apispec:post doc:name="Create Order" doc:id="35cc1a48-eb05-417b-8c56-0bb56024c0e2" config-ref="Order_API_Spec_Config" />
+                <ee:transform doc:name="Save Message and Notification" doc:id="da2f3c1f-2e1d-49e6-be27-c686883b03f4">
+                    <ee:message />
+                    <ee:variables>
+                        <ee:set-variable variableName="notifications"><![CDATA[%dw 2.0
+output application/java
+var orderId = payload.messages[0].itemId
+---
+vars.notifications ++ 
+[
+	{
+		subject: 'New Order #' ++ orderId as String,
+		recipient: vars.customer.email,
+		"type": 'email',
+		priority: 'Info',
+		message: 'Your new order #' ++ orderId as String ++ ' was processed.'
+	}
+]]]></ee:set-variable>
+                        <ee:set-variable variableName="messages"><![CDATA[%dw 2.0
+output application/java
+---
+vars.messages ++
+[
+	{
+      itemId: payload.messages[0].itemId,
+      severity: payload.messages[0].severity,
+      code: payload.messages[0].code,
+      description: payload.messages[0].description
+    }
+]]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f441d584-8681-489b-b495-5e03ffad6ef2">
+                        <logger level="ERROR" doc:name="Logger" doc:id="e270e488-8e4c-490d-b0ae-738e29d53c55" message="#['Error creating order for customer '++ vars.customer.customerId as String]" />
+                        <ee:transform doc:name="Add Notification" doc:id="cfcc835a-3482-4ba8-ac6d-8905dd806e4b">
+                            <ee:message />
+                            <ee:variables>
+                                <ee:set-variable variableName="notifications"><![CDATA[%dw 2.0
+output application/java
+---
+vars.notifications as Array ++ 
+[
+	{
+		subject: 'Error creating New Order',
+		recipient: vars.customer.email,
+		"type": 'email',
+		priority: 'Critical',
+		message: 'We encountered an error processing your order.'
+	}
+]]]></ee:set-variable>
+                                <ee:set-variable variableName="messages"><![CDATA[%dw 2.0
+output application/java
+---
+vars.messages as Array ++
+[
+	{
+      severity: 'ERROR',
+      code: '500',
+      description: 'Error creating order for customer ' ++ vars.customer.customerId as String
+    }
+]]]></ee:set-variable>
+                            </ee:variables>
+                        </ee:transform>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </foreach>
+        <notification-apispec:post doc:name="Send Email Notification" doc:id="c5859b82-42a5-4e93-8c0e-f7c5ff3d3fb1" config-ref="Notification_API_Spec_Config">
+            <notification-apispec:post-request-data><![CDATA[#[vars.notifications]]]></notification-apispec:post-request-data>
+        </notification-apispec:post>
+        <ee:transform xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="bb9fcf6b-83c7-4b25-8c40-e54ff374b931">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  meta: {
+    totalItems: sizeOf(vars.messages)
+  },
+  messages: vars.messages
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\payments:application\json:order-fulfillment-api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  meta: {
+    messages: [
+      {
+        severity: "INFO",
+        code: "200",
+        description: "OK",
+        link: {
+          href: "http://localhost",
+          title: "All good!"
+        }
+      }
+    ],
+    totalItems: 3,
+    pagingOffset: 1,
+    pagingLimit: 15
+  },
+  links: {
+    self: {
+      href: "http://localhost/currentPage",
+      title: "Current page"
+    },
+    first: {
+      href: "http://localhost/firstPage",
+      title: "First Page"
+    },
+    prev: {
+      href: "http://localhost/previousPage",
+      title: "Previous page"
+    },
+    next: {
+      href: "http://localhost/nextPage",
+      title: "Next Page"
+    },
+    last: {
+      href: "http://localhost/lastPage",
+      title: "Last Page"
+    }
+  },
+  messages: [
+    {
+      itemId: "2222222",
+      severity: "INFO",
+      code: "201",
+      description: "payment record created"
+    }, 
+    {
+      itemId: "3333333",
+      severity: "INFO",
+      code: "202",
+      description: "Create payment request accepted"
+    }, 
+    {
+      itemId: "111111",
+      severity: "INFO",
+      code: "409",
+      description: "Duplicate payment record exists"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\shipments:application\json:order-fulfillment-api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  meta: {
+    messages: [
+      {
+        severity: "INFO",
+        code: "200",
+        description: "OK",
+        link: {
+          href: "http://localhost",
+          title: "All good!"
+        }
+      }
+    ],
+    totalItems: 3,
+    pagingOffset: 1,
+    pagingLimit: 15
+  },
+  links: {
+    self: {
+      href: "http://localhost/currentPage",
+      title: "Current page"
+    },
+    first: {
+      href: "http://localhost/firstPage",
+      title: "First Page"
+    },
+    prev: {
+      href: "http://localhost/previousPage",
+      title: "Previous page"
+    },
+    next: {
+      href: "http://localhost/nextPage",
+      title: "Next Page"
+    },
+    last: {
+      href: "http://localhost/lastPage",
+      title: "Last Page"
+    }
+  },
+  messages: [
+    {
+      itemId: "2222222",
+      severity: "INFO",
+      code: "201",
+      description: "shipment record created"
+    }, 
+    {
+      itemId: "3333333",
+      severity: "INFO",
+      code: "202",
+      description: "Create shipment request accepted"
+    }, 
+    {
+      itemId: "111111",
+      severity: "INFO",
+      code: "409",
+      description: "Duplicate shipment record exists"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>
