@@ -370,9 +370,6 @@ output application/java
 vars.orderItems ++
 [
 	{
-		delivery: {
-			method: payload.delivery.method	
-		},
 		product: {
 			name: vars.currentProduct.name,
 			id: vars.currentProduct.id
@@ -387,7 +384,9 @@ vars.orderItems ++
 			itemAmount: vars.currentProduct.pricing.listPrice,
 			discountPct: payload.pricing.discountPct
 		},
-		location: {}
+		location: {
+			
+		}
 	}
 ]]]></ee:set-variable>
                         </ee:variables>
@@ -400,27 +399,18 @@ output application/java
 var customerEmail = (vars.customer.email filter $."type" == "Work")[0]
 ---
 [
+	(payload - "orderItems" - "customerId" - "trackingNumber" - "email" - "status" ) ++
 	{
-		shippingCost: payload.shippingCost,
-		sourceSystem: payload.sourceSystem,
-		payments: payload.payments,
-		subTotal: payload.subTotal,
 		orderItems: vars.orderItems,
-		totalAmount: payload.totalAmount,
-		deliveryAddress: payload.deliveryAddress,
 		customerId: vars.customer.accountId,
-		currency: payload.currency,
-		billingAddress: payload.billingAddress,
-		taxAmount: payload.taxAmount,
 		trackingNumber: uuid() as String,
-		deliveryStatus: payload.deliveryStatus,
 		email: {
 			address: customerEmail.address default "demos+1platformerror@mulesoft.com",
 			doNotEmail: customerEmail.doNotEmail default false,
 			"type": customerEmail."type",
 			preferred: customerEmail.preferred default false
 		},
-		status: payload.status
+		status: "Draft"
 	}
 ]]]></ee:set-payload>
                     </ee:message>
@@ -468,9 +458,9 @@ vars.messages ++
 [
 	{
       itemId: payload.messages[0].itemId default payload[0].id,
-      severity: payload.messages[0].severity default "WARN",
-      code: payload.messages[0].code default "510",
-      description: payload.messages[0].description default "No description"
+      severity: payload.messages[0].severity default "INFO",
+      code: payload.messages[0].code default "201",
+      description: payload.messages[0].description default "Order created."
     }
 ]]]></ee:set-variable>
                     </ee:variables>
@@ -513,7 +503,7 @@ vars.messages as Array ++
       			++ vars.originalCustomerId as String
       			++ ': CUSTOMER DOES NOT EXISTS'
       	else
-      		if (vars.currentProduct == null)
+      		if (vars.currentProduct.id == null)
       			'Error creating order for customer ' 
       			++ vars.originalCustomerId as String
       			++ ': PRODUCT ' ++ vars.originalProductId as String ++ ' DOES NOT EXISTS'
