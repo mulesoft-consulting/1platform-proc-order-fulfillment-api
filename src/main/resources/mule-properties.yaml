@@ -2,8 +2,8 @@
 anypoint:
   platform:
     analytics_base_uri: "https://analytics-ingest.anypoint.mulesoft.com/"
-    client_id: "c2b1ba5c20434fddbbe163bfb06036da"
-    client_secret: "fb2031a9B0434313b1bD16E84e9f152e"
+    client_id: "c7ee6e3c19f4407b964a5bd95f8e846e"
+    client_secret: "0874121A1d584e419e86F1360333Ca55"
     base_uri: "https://anypoint.mulesoft.com/"
     visualizer:
       layer: "Process"
@@ -35,6 +35,12 @@ order:
     port: "443"
     protocol: "HTTPS"
     basePath: "/mocks/a3856aec-6fda-42f7-be9e-29e2eb305832/api/v1"
+customer360:
+  papi:
+    url: "mocksvc.mulesoft.com"
+    port: "443"
+    protocol: "HTTPS"
+    basePath: "/mocks/41b3f3d0-9c47-4fa8-8179-130909b82b7b/v1"
 
 # AP Client App Credentials
 client:

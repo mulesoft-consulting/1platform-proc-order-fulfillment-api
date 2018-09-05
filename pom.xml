@@ -67,6 +67,12 @@
             <version>1.0.8</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+    	<dependency>
+            <groupId>b2cc42af-8763-43cf-a316-246ce7aefd04</groupId>
+            <artifactId>customer-360</artifactId>
+            <version>1.0.7</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
     </dependencies>
 
 	<repositories>
