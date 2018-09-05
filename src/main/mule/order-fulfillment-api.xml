@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:customer360api="http://www.mulesoft.org/schema/mule/customer360api" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:notification-apispec="http://www.mulesoft.org/schema/mule/notification-apispec" xmlns:order-apispec="http://www.mulesoft.org/schema/mule/order-apispec" xmlns:product-api="http://www.mulesoft.org/schema/mule/product-api" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/notification-apispec http://www.mulesoft.org/schema/mule/notification-apispec/current/mule-notification-apispec.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/order-apispec http://www.mulesoft.org/schema/mule/order-apispec/current/mule-order-apispec.xsd http://www.mulesoft.org/schema/mule/product-api http://www.mulesoft.org/schema/mule/product-api/current/mule-product-api.xsd
+<mule xmlns:customer-apispec="http://www.mulesoft.org/schema/mule/customer-apispec" xmlns:account-apispec="http://www.mulesoft.org/schema/mule/account-apispec" xmlns:customer360api="http://www.mulesoft.org/schema/mule/customer360api" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:notification-apispec="http://www.mulesoft.org/schema/mule/notification-apispec" xmlns:order-apispec="http://www.mulesoft.org/schema/mule/order-apispec" xmlns:product-api="http://www.mulesoft.org/schema/mule/product-api" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/notification-apispec http://www.mulesoft.org/schema/mule/notification-apispec/current/mule-notification-apispec.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/order-apispec http://www.mulesoft.org/schema/mule/order-apispec/current/mule-order-apispec.xsd http://www.mulesoft.org/schema/mule/product-api http://www.mulesoft.org/schema/mule/product-api/current/mule-product-api.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
-http://www.mulesoft.org/schema/mule/customer360api http://www.mulesoft.org/schema/mule/customer360api/current/mule-customer360api.xsd">
+http://www.mulesoft.org/schema/mule/customer360api http://www.mulesoft.org/schema/mule/customer360api/current/mule-customer360api.xsd
+http://www.mulesoft.org/schema/mule/account-apispec http://www.mulesoft.org/schema/mule/account-apispec/current/mule-account-apispec.xsd
+http://www.mulesoft.org/schema/mule/customer-apispec http://www.mulesoft.org/schema/mule/customer-apispec/current/mule-customer-apispec.xsd">
     <http:listener-config name="order-fulfillment-api-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8082" protocol="HTTPS">
             <tls:context>
@@ -11,11 +13,11 @@ http://www.mulesoft.org/schema/mule/customer360api http://www.mulesoft.org/schem
     </http:listener-config>
     <apikit:config name="order-fulfillment-api-config" raml="order-fulfillment-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <configuration-properties doc:name="Configuration properties" doc:id="f0c89c0b-cb1d-41da-931b-148e75ff00a4" file="mule-properties.yaml" />
-    <notification-apispec:config name="Notification_API_Spec_Config" doc:name="Notification API Spec Config" doc:id="f102fe55-eb86-4dcd-b12d-9967d5d156f0" property_host="${notification.dapi.url}" property_basePath="${notification.dapi.basePath}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" property_port="${notification.dapi.port}" property_protocol="${notification.dapi.protocol}"/>
-    <order-apispec:config name="Order_API_Spec_Config" doc:name="Order API Spec Config" doc:id="09eb0b84-afa9-40c7-860b-d36703f91a99" property_host="${order.dapi.url}" property_basePath="${order.dapi.basePath}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" property_port="${order.dapi.port}" property_protocol="${order.dapi.protocol}"/>
-    <product-api:config name="Product_API_Config" doc:name="Product API Config" doc:id="8288bc9f-f12c-4347-ab80-ba79f04020ca" property_host="${product.dapi.url}" property_basePath="${product.dapi.basePath}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" property_port="${product.dapi.port}" property_protocol="${product.dapi.protocol}"/>
+    <notification-apispec:config name="Notification_API_Spec_Config" doc:name="Notification API Spec Config" doc:id="f102fe55-eb86-4dcd-b12d-9967d5d156f0" property_host="${notification.dapi.host}" property_basePath="${notification.dapi.basePath}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" property_port="${notification.dapi.port}" property_protocol="${notification.dapi.protocol}"/>
+    <order-apispec:config name="Order_API_Spec_Config" doc:name="Order API Spec Config" doc:id="09eb0b84-afa9-40c7-860b-d36703f91a99" property_host="${order.dapi.host}" property_basePath="${order.dapi.basePath}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" property_port="${order.dapi.port}" property_protocol="${order.dapi.protocol}"/>
+    <product-api:config name="Product_API_Config" doc:name="Product API Config" doc:id="8288bc9f-f12c-4347-ab80-ba79f04020ca" property_host="${product.dapi.host}" property_basePath="${product.dapi.basePath}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" property_port="${product.dapi.port}" property_protocol="${product.dapi.protocol}"/>
     <api-gateway:autodiscovery apiId="${autodiscovery.api.id}" doc:name="API Autodiscovery" doc:id="6374a123-f3ee-49c6-833f-9d309c4de677" flowRef="order-fulfillment-api-main" />
-	<customer360api:config name="Customer_360_API_Config" doc:name="Customer 360 API Config" doc:id="caafa5d3-ec0b-481e-a920-c01f9ff8e54a" property_host="${customer360.papi.url}" property_port="${customer360.papi.port}" property_basePath="${customer360.papi.basePath}" property_protocol="${customer360.papi.protocol}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" />
+	<customer-apispec:config name="Customer_API_Spec_Config" doc:name="Customer API Spec Config" doc:id="7a21046a-df23-4e8d-ab94-02463eb72638" property_host="${customer.dapi.host}" property_port="${customer.dapi.port}" property_basePath="${customer.dapi.basePath}" property_protocol="${customer.dapi.protocol}" property_client-id="${client.app.client_id}" property_client-secret="${client.app.client_secret}" />
 	<flow name="order-fulfillment-api-main">
         <http:listener config-ref="order-fulfillment-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -336,11 +338,29 @@ output application/java
             </ee:variables>
         </ee:transform>
         <foreach doc:name="For Each Order" doc:id="c9b5ddf6-ecd1-47e3-9657-560839598a73" collection="#[payload]">
-            <try doc:name="Try" doc:id="bdc47c09-3f76-4680-a250-a4ba40f851f5">
-                <customer360api:get-customer-by-id doc:name="Get customer by id" doc:id="9ba62da9-693e-4761-a820-25ccbb59106c" id="#[payload.customerId]" target="customer" config-ref="Customer_360_API_Config"/>
-				<set-variable value="#[[]]" doc:name="Create empty orderItems array" doc:id="fdab7476-2408-4199-aabd-e2ca84c115d5" variableName="orderItems" />
-                <foreach doc:name="For Each orderItem" doc:id="ec21fb63-55c2-44e5-94e5-63a72ac8a0d7" collection="#[payload.orderItems]">
-                    <product-api:get doc:name="Get" doc:id="d65eee92-1afb-4e7f-98aa-ee90bce39cc5" id="#[payload.product.id]" target="currentProduct" config-ref="Product_API_Config" />
+            <ee:transform doc:name="Define Variables" doc:id="6478a6b8-4219-4295-95f2-b857cb49ff21">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="orderItems"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+						<ee:set-variable variableName="originalCustomerId"><![CDATA[%dw 2.0
+output application/java
+---
+payload.customerId as String]]></ee:set-variable>
+					<ee:set-variable variableName="originalProductId" ><![CDATA[%dw 2.0
+output application/java
+---
+null]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			<try doc:name="Try" doc:id="bdc47c09-3f76-4680-a250-a4ba40f851f5">
+				<customer-apispec:get-customer-by-id doc:name="Get customer by id" doc:id="a8f434e3-127b-423c-9beb-ad36f4bafe9d" config-ref="Customer_API_Spec_Config" id="#[payload.customerId]" target="customer"/>
+				<foreach doc:name="For Each orderItem" doc:id="ec21fb63-55c2-44e5-94e5-63a72ac8a0d7" collection="#[payload.orderItems]">
+                    <set-variable value="#[payload.product.id]" doc:name="Set Variable" doc:id="9149a492-85a4-4ee1-95a2-7aed28dba404" variableName="originalProductId"/>
+					<product-api:get doc:name="Get" doc:id="d65eee92-1afb-4e7f-98aa-ee90bce39cc5" id="#[payload.product.id]" target="currentProduct" config-ref="Product_API_Config" />
                     <ee:transform doc:name="Transform Message" doc:id="0dacb70c-32ba-4266-aa6d-cb10a76d7ac9">
                         <ee:message />
                         <ee:variables>
@@ -407,7 +427,9 @@ output application/java
 output application/java
 var orderId = payload.messages[0].itemId
 ---
-vars.notifications ++ 
+vars.notifications
+++ 
+(if ((vars.customer.email filter $."type" == "Work")[0].address != null)
 [
 	{
 		subject: 'New Order #' ++ orderId as String,
@@ -415,7 +437,13 @@ vars.notifications ++
 		"type": 'email',
 		priority: 'Info',
 		message: 'Your new order #' ++ orderId as String ++ ' was processed.'
-	},
+	}
+]
+else
+	[])
+++
+(if ((vars.customer.phone filter $."type" == "Work")[0].phoneNumber != null)
+[
 	{
 		subject: 'New Order #' ++ orderId as String,
 		recipient: (vars.customer.phone filter $."type" == "Work")[0].phoneNumber,
@@ -423,7 +451,9 @@ vars.notifications ++
 		priority: 'Info',
 		message: 'Your new order #' ++ orderId as String ++ ' was processed.'
 	}
-]]]></ee:set-variable>
+]
+else
+	[])]]></ee:set-variable>
                         <ee:set-variable variableName="messages"><![CDATA[%dw 2.0
 output application/java
 ---
@@ -438,25 +468,30 @@ vars.messages ++
 ]]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
-                <error-handler>
-                    <on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f441d584-8681-489b-b495-5e03ffad6ef2">
-                        <logger level="ERROR" doc:name="Logger" doc:id="e270e488-8e4c-490d-b0ae-738e29d53c55" message="#['Error creating order for customer '++ vars.customer.id as String]" />
-                        <ee:transform doc:name="Add Notification" doc:id="cfcc835a-3482-4ba8-ac6d-8905dd806e4b">
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a4fb7586-26cc-4b50-97a0-461c3436cb86" type="ANY">
+						<logger level="ERROR" doc:name="Logger" doc:id="e270e488-8e4c-490d-b0ae-738e29d53c55" message="#['Error creating order for customer '++ vars.originalCustomerId as String]" />
+						<ee:transform doc:name="Save Message and Notification" doc:id="cfcc835a-3482-4ba8-ac6d-8905dd806e4b">
                             <ee:message />
                             <ee:variables>
                                 <ee:set-variable variableName="notifications"><![CDATA[%dw 2.0
 output application/java
 ---
-vars.notifications as Array ++ 
-[
-	{
-		subject: 'Error creating New Order',
-		recipient: (vars.customer.email filter $."type" == "Work")[0].address,
-		"type": 'email',
-		priority: 'Critical',
-		message: 'We encountered an error processing your order.'
-	}
-]]]></ee:set-variable>
+if (vars.customer != null)
+	vars.notifications as Array ++ 
+	[
+		{
+			subject: 'Error creating New Order',
+			recipient: (vars.customer.email filter $."type" == "Work")[0].address,
+			"type": 'email',
+			priority: 'Critical',
+			message: 'We encountered an error processing your order.'
+		}
+	]
+else
+	// no email to notify because there was an error getting the customer
+	vars.notifications as Array
+	]]></ee:set-variable>
                                 <ee:set-variable variableName="messages"><![CDATA[%dw 2.0
 output application/java
 ---
@@ -465,34 +500,60 @@ vars.messages as Array ++
 	{
       severity: 'ERROR',
       code: '500',
-      description: 'Error creating order for customer ' ++ vars.customer.id as String
+      description: 
+      	if (vars.customer.accountId == null)
+      		'Error creating order for customer ' 
+      			++ vars.originalCustomerId as String
+      			++ ': CUSTOMER DOES NOT EXISTS'
+      	else
+      		if (vars.currentProduct == null)
+      			'Error creating order for customer ' 
+      			++ vars.originalCustomerId as String
+      			++ ': PRODUCT ' ++ vars.originalProductId as String ++ ' DOES NOT EXISTS'
+      		else
+      	 		'Error creating order for customer ' 
+      	 			++ vars.originalCustomerId as String
+      	 			++ ': UNKOWN ERROR CREATING ORDER'
     }
 ]]]></ee:set-variable>
                             </ee:variables>
                         </ee:transform>
-                    </on-error-continue>
+					</on-error-continue>
                 </error-handler>
             </try>
         </foreach>
-		<logger level="INFO" doc:name="Logger" doc:id="93d0155f-f198-48ad-be72-fa274ff50f20" message="#[output application/json --- vars.notifications]"/>
-		<notification-apispec:post doc:name="Send Email Notification" doc:id="c5859b82-42a5-4e93-8c0e-f7c5ff3d3fb1" config-ref="Notification_API_Spec_Config">
+		<try doc:name="Try" doc:id="b64622af-0704-4440-9ae8-44810251f4cd" >
+			<choice doc:name="Choice" doc:id="eaad7dca-4d51-4eef-b7d0-c50d4fb4031d">
+			<when expression="#[vars.notifications == null or sizeOf(vars.notifications) == 0]">
+				<logger level="INFO" doc:name="Logger" doc:id="55d7192b-8574-4e5b-9ea3-90831a369435" message="#['No need to send notifications']" />
+			</when>
+			<otherwise>
+				<notification-apispec:post doc:name="Send Email Notification" doc:id="c5859b82-42a5-4e93-8c0e-f7c5ff3d3fb1" config-ref="Notification_API_Spec_Config">
             <notification-apispec:post-request-data><![CDATA[#[vars.notifications]]]></notification-apispec:post-request-data>
         </notification-apispec:post>
-        <ee:transform xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="bb9fcf6b-83c7-4b25-8c40-e54ff374b931">
+			</otherwise>
+		</choice>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="36fa7c92-2ca2-4649-b76c-0790eab5ff94" type="ANY">
+							<logger level="ERROR" doc:name="Logger" doc:id="e0018ef1-ac84-4bc7-b490-d6bda5f9feaf" message="#['Error sending notifications through Notification API']" />
+						</on-error-continue>
+			</error-handler>
+		</try>
+        <ee:transform xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="bb9fcf6b-83c7-4b25-8c40-e54ff374b931" doc:name="Set Response">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
   meta: {
-    totalItems: sizeOf(vars.messages)
+    totalItems: sizeOf(vars.messages) default 0
   },
-  messages: vars.messages
+  messages: vars.messages default []
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="post:\payments:application\json:order-fulfillment-api-config">
+	<flow name="post:\payments:application\json:order-fulfillment-api-config">
         <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0

@@ -1,6 +1,6 @@
 #%RAML 1.0
 title: Order Fulfillment API
-baseUri: https://mocksvc.mulesoft.com/mocks/e0217802-c570-4e07-910b-479e5b15ee58/{version} # baseUri: https://mocksvc.mulesoft.com/mocks/0aa26caa-1d19-466a-8563-721a7005be53/{version} # baseUri: http://localhost/{version}
+baseUri: https://mocksvc.mulesoft.com/mocks/e0217802-c570-4e07-910b-479e5b15ee58/{version} # baseUri: https://mocksvc.mulesoft.com/mocks/a3856aec-6fda-42f7-be9e-29e2eb305832/api/{version} # baseUri: http://order-fulfillment-api-v1-0-0.us-e2.cloudhub.io/api/{version}
 version: v1
 mediaType: [application/json, application/xml]
 securedBy: [passthrough]
@@ -10,15 +10,17 @@ securitySchemes:
 description: This API spec design highlights the power of RAML. It reuses existing RAML fragments for dataTypes, traits, resourceTypes and more to simplify and accelerate definig an API Spec. Fragments also ENSURE CONSISTENCY acrosss APIs. With consistency comes acclerated delivery due to developers familiarity with the design fragments. Overlays and extensions are available if needed to modify the API fragments.  \nRAML allows you to define RAML DataTypes and RAML NamedExamples instead of defining a schema and example for JSON and another for schema and example for XML and then trying to keep them in sync. With RAML DataTypes and NamedExamples you can support JSON & XML from one DataType and one NamedExample.
 
 uses: 
-  order: /exchange_modules/66234019-5a31-4239-ba28-4e6d70f0468a/order-library/1.0.22/order-library.raml
-  shipment: /exchange_modules/0e51de00-de0a-4ef3-a49d-0f4641d6c424/shipment-library/1.0.9/shipment-library.raml
-  payment: /exchange_modules/450b592a-65f1-4c8b-8aba-33d3ae9f2d95/payment-library/1.0.13/payment-library.raml
-  collectionRT: /exchange_modules/5dfb47dc-12e3-4cac-afc5-a00be32d15d8/collection-library/1.0.24/collection-library.raml
+  order: /exchange_modules/66234019-5a31-4239-ba28-4e6d70f0468a/order-library/1.0.25/order-library.raml
+  shipment: /exchange_modules/0e51de00-de0a-4ef3-a49d-0f4641d6c424/shipment-library/1.0.10/shipment-library.raml
+  payment: /exchange_modules/450b592a-65f1-4c8b-8aba-33d3ae9f2d95/payment-library/1.0.15/payment-library.raml
+  collectionRT: /exchange_modules/5dfb47dc-12e3-4cac-afc5-a00be32d15d8/collection-library/1.0.27/collection-library.raml
 
 /orders:
   type:  
     collectionRT.collection:
       mediaType: application/json
+      collectionExample: !include /exchange_modules/66234019-5a31-4239-ba28-4e6d70f0468a/order-library/1.0.25/examples/collection.raml
+      collectionResponseExample: !include /exchange_modules/66234019-5a31-4239-ba28-4e6d70f0468a/order-library/1.0.25/examples/collectionResponse.raml
   get:
     queryParameters: 
       customerId?:
@@ -28,21 +30,26 @@ uses:
     type: 
       collectionRT.member:
         mediaType: application/json
+        memberExample: !include /exchange_modules/66234019-5a31-4239-ba28-4e6d70f0468a/order-library/1.0.25/examples/member.raml
     uriParameters: 
       id:
         example: "1"
         default: "1"
     get:
 
+
 /shipments:
   type:  
     collectionRT.collection:
       mediaType: application/json
+      collectionExample: !include /exchange_modules/0e51de00-de0a-4ef3-a49d-0f4641d6c424/shipment-library/1.0.10/examples/collection.raml
+      collectionResponseExample: !include /exchange_modules/0e51de00-de0a-4ef3-a49d-0f4641d6c424/shipment-library/1.0.10/examples/collectionResponse.raml
   post:
   /{id}:
     type: 
       collectionRT.member:
         mediaType: application/json
+        memberExample: !include /exchange_modules/0e51de00-de0a-4ef3-a49d-0f4641d6c424/shipment-library/1.0.10/examples/member.raml
     uriParameters: 
       id:
         example: "1"
@@ -54,11 +61,14 @@ uses:
   type:  
     collectionRT.collection:
       mediaType: application/json
+      collectionExample: !include /exchange_modules/450b592a-65f1-4c8b-8aba-33d3ae9f2d95/payment-library/1.0.15/examples/collection.raml
+      collectionResponseExample: !include /exchange_modules/450b592a-65f1-4c8b-8aba-33d3ae9f2d95/payment-library/1.0.15/examples/collectionResponse.raml
   post:
   /{id}:
     type: 
       collectionRT.member:
         mediaType: application/json
+        memberExample: !include /exchange_modules/450b592a-65f1-4c8b-8aba-33d3ae9f2d95/payment-library/1.0.15/examples/member.raml
     uriParameters: 
       id:
         example: "1"

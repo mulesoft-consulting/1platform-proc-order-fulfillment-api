@@ -19,28 +19,28 @@ keystore:
 # Consuming APIs
 notification:
   dapi:
-    url: "nto-notification-api.us-e2.cloudhub.io"
+    host: "nto-notification-api.us-e2.cloudhub.io"
     port: "443"
     protocol: "HTTPS"
     basePath: "/api"
 product:
   dapi:
-    url: "nto-product-api.us-e2.cloudhub.io"
+    host: "nto-product-api.us-e2.cloudhub.io"
     port: "443"
     protocol: "HTTPS"
     basePath: "/api"
 order:
   dapi:
-    url: "mocksvc.mulesoft.com"
+    host: "mocksvc.mulesoft.com"
     port: "443"
     protocol: "HTTPS"
-    basePath: "/mocks/a3856aec-6fda-42f7-be9e-29e2eb305832/api/v1"
-customer360:
-  papi:
-    url: "mocksvc.mulesoft.com"
+    basePath: "/mocks/f13e2478-357e-4a95-a02c-9ce7b92652aa/v2"
+customer:
+  dapi:
+    host: "nto-customer-api-v1.us-e2.cloudhub.io"
     port: "443"
     protocol: "HTTPS"
-    basePath: "/mocks/41b3f3d0-9c47-4fa8-8179-130909b82b7b/v1"
+    basePath: "/api"
 
 # AP Client App Credentials
 client:
