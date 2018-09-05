@@ -31,10 +31,10 @@ product:
     basePath: "/api"
 order:
   dapi:
-    host: "mocksvc.mulesoft.com"
+    host: "nto-proc-order-api.us-e2.cloudhub.io"
     port: "443"
     protocol: "HTTPS"
-    basePath: "/mocks/f13e2478-357e-4a95-a02c-9ce7b92652aa/v2"
+    basePath: "/api"
 customer:
   dapi:
     host: "nto-customer-api-v1.us-e2.cloudhub.io"
