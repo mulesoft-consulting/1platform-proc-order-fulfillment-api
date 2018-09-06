@@ -420,10 +420,10 @@ var customerEmail = (vars.customer.email filter $."type" == "Work")[0]
 		email: {
 			address: customerEmail.address default "demos+1platformerror@mulesoft.com",
 			doNotEmail: customerEmail.doNotEmail default false,
-			"type": customerEmail."type",
+			"type": customerEmail."type" default "Work",
 			preferred: customerEmail.preferred default false
 		},
-		status: "Draft"
+		status: "Completed"
 	}
 ]]]></ee:set-payload>
                     </ee:message>
