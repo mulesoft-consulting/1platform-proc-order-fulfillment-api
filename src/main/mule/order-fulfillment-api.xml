@@ -359,7 +359,20 @@ null]]></ee:set-variable>
 			<try doc:name="Try" doc:id="bdc47c09-3f76-4680-a250-a4ba40f851f5">
 				<customer-apispec:get-customer-by-id doc:name="Get customer by id" doc:id="a8f434e3-127b-423c-9beb-ad36f4bafe9d" config-ref="Customer_API_Spec_Config" id="#[payload.customerId]" target="customer"/>
 				<foreach doc:name="For Each orderItem" doc:id="ec21fb63-55c2-44e5-94e5-63a72ac8a0d7" collection="#[payload.orderItems]">
-                    <set-variable value="#[payload.product.id]" doc:name="Set Variable" doc:id="9149a492-85a4-4ee1-95a2-7aed28dba404" variableName="originalProductId"/>
+					<ee:transform doc:name="Set Variables" doc:id="f9833c98-c169-4ff4-b818-b39351e00bba" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="originalProductId" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.product.id]]></ee:set-variable>
+							<ee:set-variable variableName="currentProduct" ><![CDATA[%dw 2.0
+output application/java
+---
+null]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
 					<product-api:get doc:name="Get" doc:id="d65eee92-1afb-4e7f-98aa-ee90bce39cc5" id="#[payload.product.id]" target="currentProduct" config-ref="Product_API_Config" />
                     <ee:transform doc:name="Transform Message" doc:id="0dacb70c-32ba-4266-aa6d-cb10a76d7ac9">
                         <ee:message />
@@ -509,8 +522,8 @@ vars.messages as Array ++
       			++ ': PRODUCT ' ++ vars.originalProductId as String ++ ' DOES NOT EXISTS'
       		else
       	 		'Error creating order for customer ' 
-      	 			++ vars.originalCustomerId as String
-      	 			++ ': UNKOWN ERROR CREATING ORDER'
+      	 			++ vars.originalCustomerId as String ++ ". "
+      	 			++ payload.messages[0].description default " (ERROR CREATING ORDER)"
     }
 ]]]></ee:set-variable>
                             </ee:variables>
