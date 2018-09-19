@@ -324,9 +324,10 @@ payload]]></ee:set-payload>
 		</ee:transform>
     </flow>
     <flow name="order-fulfillment-api_Get-Order-HTML-Representation_Flow" doc:id="984cd376-6742-4ae0-be10-4c16d0f1a78a" >
-		<ee:transform doc:name="Transform Message" doc:id="dfb768de-6330-4729-bf5b-d2318ff03a12" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<try doc:name="Try" doc:id="024be1ef-3a38-473c-bf67-41c98fefa85a" >
+			<ee:transform doc:name="Transform Message" doc:id="dfb768de-6330-4729-bf5b-d2318ff03a12">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/java
 import * from dw::core::Binaries
 var itemsDescription=((payload.orderItems map($.product.name)) joinBy ", ")
@@ -444,6 +445,12 @@ toBase64('<table style="width:500px;color:rgb(51,51,51);margin:0 auto;border-col
   </table>')]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="61ee5050-b025-4649-8a0f-d46ef33eccb4" >
+					<set-payload value="#['Your new order #' ++ payload.orderId as String default 'XXXXXX' ++ ' was processed.']" doc:name="Set Payload" doc:id="85ccca2e-e088-4666-a78d-207299a36eb5" />
+				</on-error-continue>
+			</error-handler>
+		</try>
 	</flow>
 	<flow name="post:\orders:application\json:order-fulfillment-api-config">
     		<ee:transform doc:name="Create an empty arrays" doc:id="719920bb-f0ee-41df-b7a8-581d4296f031">
