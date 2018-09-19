@@ -323,7 +323,129 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
     </flow>
-    <flow name="post:\orders:application\json:order-fulfillment-api-config">
+    <flow name="order-fulfillment-api_Get-Order-HTML-Representation_Flow" doc:id="984cd376-6742-4ae0-be10-4c16d0f1a78a" >
+		<ee:transform doc:name="Transform Message" doc:id="dfb768de-6330-4729-bf5b-d2318ff03a12" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+import * from dw::core::Binaries
+var itemsDescription=((payload.orderItems map($.product.name)) joinBy ", ")
+var finalDescSMS=(itemsDescription[0 to 56] ++ '...' default itemsDescription[0 to -1] )
+var subjectDescEmail=(itemsDescription[0 to 25] ++ '...' default itemsDescription[0 to -1] )
+var deliveryDate=((now() + |P2D|) as String {format: 'EEEE, MMMM dd'})
+var deliveryAddress=((payload.deliveryAddress.addressLines[0])[0 to 15] as String ++ '...' default (payload.deliveryAddress.addressLines[0])[0 to -1])
+---
+toBase64('<table style="width:500px;color:rgb(51,51,51);margin:0 auto;border-collapse:collapse"> 
+   <tbody>
+    <tr>
+     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756frame" style="vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"><span></span><br><br>
+      <table style="width:500px;border-collapse:collapse"> 
+       <tbody>
+        <tr> 
+         <td style="width:500px;border-bottom:1px solid rgb(234,234,234);padding-top:10px;padding-left:0px;padding-right:0px;padding-bottom:10px;vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"> 
+          <table cellspacing="0" cellpadding="0" style="border-collapse:collapse"> 
+           <tbody>
+     <tr> 
+     <td style="background-color: #393939; width:500px;border-bottom:10px solid #6ccdf0; border-top: 3px solid #6ccdf0;padding-top:10px;padding-left:10px;padding-right:10px;padding-bottom:10px;vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"> 
+      <table cellspacing="0" cellpadding="0" style="border-collapse:collapse;"> 
+      <tbody>
+       <tr> 
+       <td width="250" style="vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"> <a href="https://ntoretail.com" title="Visit ntoretail.com" style="text-decoration:none;color:rgb(0,102,153);font:14px/16px Arial,sans-serif" target="_blank"><img alt="NTO" src="http://s3.amazonaws.com/nto/images/logo-main@2x.png" style="width:210px;height:46px;border:0;"></a> </td> 
+       <td width="250" valign="top" align="right" style="vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"> <p style="font-size:20px;font-family:&quot;arial&quot;,&quot;sans-serif&quot;;margin:1px 0 8px 0;font:12px/16px Arial,sans-serif; color: #FFFFFF;"><font size="4"> Order Confirmation</font></p> </td> 
+       </tr> 
+      </tbody>
+          </table> </td>
+        </tr> 
+        <tr> 
+         <td istyle="width:100%;padding:0 0 0 0;font-size:14px;vertical-align:top;line-height:18px;font-family:Arial,sans-serif"> <p style="margin:1px 0 8px 0;font:12px/16px Arial,sans-serif"> </p>
+          <div class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756greeting" style="font-size:18px;line-height:30px;color:rgb(105,105,105)">
+           Hello ' ++ vars.customer.name as String ++ ',
+          </div><br> Thank you for shopping with us. You ordered <a href="https://ntoretail.com" style="font-size:12px;text-decoration:none;color:rgb(0,102,153);font:14px/16px Arial,sans-serif" target="_blank">' ++ subjectDescEmail ++ '". </a> We’ll send a confirmation when your item ships. <p style="margin:1px 0 8px 0;font:12px/16px Arial,sans-serif"></p> </td> 
+        </tr> 
+        <tr> 
+         <td style="padding:10px 0 0 0;vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"> <p style="font:18px Arial,sans-serif;color:rgb(105,105,105);border-bottom:1px solid rgb(234,234,234);margin:1px 0 8px 0"> Details </p> <p style="font:14px Arial,sans-serif;color:rgb(102,102,102);margin:1px 0 8px 0">Order <a href="https://ntoretail.com" style="text-decoration:none;color:rgb(0,102,153);font:14px/16px Arial,sans-serif" target="_blank">#'++ payload.orderId as String ++'</a></p> </td> 
+        </tr> 
+        <tr> 
+         <td style="vertical-align:top;font-size:13px;line-height:18px;font-family:Arial,sans-serif"> 
+          <table style="width:100%;border-top:3px solid #6ccdf0;border-collapse:collapse">  
+           <tbody>
+            <tr style="padding-bottom:1000px"> 
+             <td style="padding:11px 40px 20px 18px;font-size:14px;background-color:#eeeeee; vertical-align:top;line-height:18px;font-family:Arial,sans-serif"> <p style="font:14px Arial,sans-serif;margin:1px 0 8px 0"> <span style="font-size:14px;color:rgb(0,102,153)">Arriving:</span> <br> <b> <font style="color:#00669C">' ++ deliveryDate ++ '</font> </b> </p> <br> <a href="https://ntoretail.com" style="text-decoration: none;font: 14px Arial,sans-serif;display: block;width: 100%;background-color: #565656;color: white;text-align: center;height: 29px;vertical-align: middle;padding-top: 12px;" target="_blank">View or manage order</a> </td> 
+              
+             <td style="padding:11px 0px 20px 18px;font-size:14px;background-color:rgb(239,239,239);vertical-align:top;line-height:18px;font-family:Arial,sans-serif"> <p style="font:14px Arial,sans-serif;margin:1px 0 8px 0"> <span style="font-size:14px;color:rgb(102,102,102)">Ship to:</span> <br> <b>' ++ vars.customer.name as String ++ '<br>' ++ deliveryAddress ++ '<br> </b> <br> </p> 
+              <table style="width:50%;border-collapse:collapse"> 
+               <tbody>
+                <tr style="padding-bottom:1000px">
+                 
+                 <td style="font-size:14px;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> 
+                  <table style="width:100%;text-align:right;line-height:18px;padding:0 10px 0 0;border-collapse:collapse"> 
+                   <tbody>
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756text" style="font-size:12px;text-align:left;white-space:nowrap;background-color:rgb(239,239,239);line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> Total Before Tax: </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756text" style="font-size:12px;text-align:left;white-space:nowrap;background-color:rgb(239,239,239);line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756text" style="font-size:12px;text-align:left;white-space:nowrap;background-color:rgb(239,239,239);line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> Estimated Tax: </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756text" style="font-size:12px;text-align:left;white-space:nowrap;background-color:rgb(239,239,239);line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756text" style="font-size:12px;text-align:left;white-space:nowrap;background-color:rgb(239,239,239);line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> Shipping Cost: </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756total" style="font-size:14px;text-align:left;font-weight:bold;background-color:rgb(239,239,239);line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> Order Total: </td> 
+                    </tr> 
+                   </tbody>
+                  </table> </td> 
+                 <td style="font-size:14px;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> 
+                  <table style="width:100%;text-align:right;line-height:18px;padding:0 10px 0 0;border-collapse:collapse"> 
+                   <tbody>
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756price" style="font-size:12px;white-space:nowrap;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> \$'++ payload.subTotal as String ++'</td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756price" style="font-size:12px;white-space:nowrap;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756price" style="font-size:12px;white-space:nowrap;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> \$'++ payload.taxAmount as String ++'</td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756price" style="font-size:12px;white-space:nowrap;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> </td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td class="m_2168160323284753779m_8812380813803576096m_-1446670953143247756price" style="font-size:12px;white-space:nowrap;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> \$'++ payload.shippingCost as String ++'</td> 
+                    </tr> 
+                    <tr style="padding-bottom:1000px"> 
+                     <td style="font-size:14px;background-color:rgb(239,239,239);text-align:right;line-height:18px;padding:0 10px 0 0;vertical-align:top;font-family:Arial,sans-serif"> <b>\$'++ payload.totalAmount as String ++'</b> </td> 
+                    </tr> 
+                   </tbody>
+                  </table> </td> 
+                </tr> 
+               </tbody>
+              </table> 
+              <table cellspacing="0" cellpadding="0" style="border-collapse:collapse">
+               <tbody>
+                <tr style="padding-bottom:1000px">
+                 <td style="padding:0 0 0 0;font-size:14px;background-color:rgb(239,239,239);vertical-align:top;line-height:18px;font-family:Arial,sans-serif"> <img align="left" height="1" src="https://ci6.googleusercontent.com/proxy/BfCv-ppUM2vIFNxI2gOGTptaVFzVnOYD5dcNsWsRxcFYr8_vufBgOvbgCi_ZxN5MBdFENEO2vTG9cUMX-GMn1zmsTW7PldGaiTtbpzWMDo1z4ust5f-anhKXqiNPpuS04GWJrsUinNvIH24=s0-d-e1-ft#http://g-ec2.images-amazon.com/images/G/01/x-locale/cs/te/MagicPixel._V319790361_.png" width="200" class="CToWUd"> </td>
+                </tr>
+               </tbody>
+              </table> </td> 
+            </tr> 
+           </tbody>
+          </table> </td>  
+        </tr>  
+       </tbody>
+      </table> </td> 
+    </tr> 
+   </tbody>
+  </table>')]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="post:\orders:application\json:order-fulfillment-api-config">
     		<ee:transform doc:name="Create an empty arrays" doc:id="719920bb-f0ee-41df-b7a8-581d4296f031">
             <ee:message />
             <ee:variables>
@@ -429,24 +551,29 @@ var customerEmail = (vars.customer.email filter $."type" == "Work")[0]
                     </ee:message>
                     <ee:variables />
                 </ee:transform>
-                <order-apispec:post doc:name="Create Order" doc:id="35cc1a48-eb05-417b-8c56-0bb56024c0e2" config-ref="Order_API_Spec_Config" />
+                <set-variable value="#[payload[0]]" doc:name="Save Created Order" doc:id="38fdc95a-a3cf-41a5-93e0-1e7602f2f9ab" variableName="createdOrder"/>
+				<order-apispec:post doc:name="Create Order" doc:id="35cc1a48-eb05-417b-8c56-0bb56024c0e2" config-ref="Order_API_Spec_Config" />
                 <ee:transform doc:name="Save Message and Notification" doc:id="da2f3c1f-2e1d-49e6-be27-c686883b03f4">
                     <ee:message />
                     <ee:variables>
                         <ee:set-variable variableName="notifications"><![CDATA[%dw 2.0
 output application/java
 var orderId = (if (payload.messages[0].itemId == null) payload[0].id else payload.messages[0].itemId)
+var itemsDescription=((vars.createdOrder.orderItems map($.product.name)) joinBy ", ")
+var finalDescSMS=(itemsDescription[0 to 56] ++ '...' default itemsDescription[0 to -1] )
+var subjectDescEmail=(itemsDescription[0 to 25] ++ '...' default itemsDescription[0 to -1] )
+var newOrder=(vars.createdOrder ++ {'orderId': orderId})
 ---
 vars.notifications
 ++ 
 (if ((vars.customer.email filter $."type" == "Work")[0].address != null)
 [
 	{
-		subject: 'New Order #' ++ orderId as String,
+		subject: 'Your NTO order of "' ++ subjectDescEmail,
 		recipient: (vars.customer.email filter $."type" == "Work")[0].address,
 		"type": 'email',
 		priority: 'Info',
-		message: 'Your new order #' ++ orderId as String ++ ' was processed.'
+		message: lookup('order-fulfillment-api_Get-Order-HTML-Representation_Flow',newOrder)
 	}
 ]
 else
@@ -459,7 +586,8 @@ else
 		recipient: (vars.customer.phone filter $."type" == "Work")[0].phoneNumber,
 		"type": 'SMS',
 		priority: 'Info',
-		message: 'Your new order #' ++ orderId as String ++ ' was processed.'
+		//message: 'Your new order #' ++ orderId as String ++ ' was processed.'
+		message: 'Shipped: Your NTO package with ' ++ finalDescSMS ++ ' will be delivered.'
 	}
 ]
 else
