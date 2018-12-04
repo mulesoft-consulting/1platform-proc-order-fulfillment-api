@@ -1,0 +1,51 @@
+https:
+  port: 
+      
+keystore:
+  path: 
+  password: 
+
+notification:
+  dapi:
+    host: 
+    port: 
+    protocol: 
+    basePath: 
+
+product:
+  dapi:
+    host: 
+    port: 
+    protocol: 
+    basePath: 
+
+order:
+  dapi:
+    host: 
+    port: 
+    protocol: 
+    basePath: 
+
+customer:
+  dapi:
+    host: 
+    port: 
+    protocol: 
+    basePath: 
+
+app:
+  autodiscovery:
+  client_id:
+  client_secret: 
+
+anypoint:
+  mq:
+    url: 
+    exchange:
+      name: 
+    client:
+      id: 
+      secret: 
+
+# Business Properties
+tax_value:

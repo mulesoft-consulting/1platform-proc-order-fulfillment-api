@@ -1,0 +1,117 @@
+#%RAML 1.0 Library
+uses: 
+  collection: /exchange_modules/5dfb47dc-12e3-4cac-afc5-a00be32d15d8/collection-library/1.0.27/collection-library.raml
+  address: /exchange_modules/5dfb47dc-12e3-4cac-afc5-a00be32d15d8/postal-address-library/1.0.4/postal-address-library.raml
+  links: /exchange_modules/5dfb47dc-12e3-4cac-afc5-a00be32d15d8/hypermedia-library/1.0.4/hypermedia-library.raml
+
+types:
+  ShipmentStatus:
+    enum: [Package has left seller facility and is in transit to carrier, Shipment departed, Arrived at a carrier facility, Transferred for final delivery, Out for delivery, Delivered ]
+
+  ShipmentRequest:
+    properties:
+      sourceSystem?: 
+      carrier?: 
+        examples: 
+          UPS: UPS
+          FedEx: FedEx
+          USPS: USPS
+      trackingNumber?: 
+        example: 12345c
+      orderId?: 
+      origin: address.Address
+      destination: address.Address
+      dates?:
+        properties: 
+          appointmentDate?: 
+            type: date-only
+            example: 2018-08-15
+          estimatedDeliveryDate?: 
+            type: date-only
+            example: 2018-08-15
+          actualDeliveryDate?: 
+            type: date-only
+            example: 2018-08-17
+      contents?:
+        properties: 
+          numberOfPieces:   
+            type: number
+            example: 2
+          totalWeight?: 
+            type: number
+            example: 80
+          unitOfMeasure?: 
+            example: lbs
+          items?:
+            type: array
+            items: 
+              properties: 
+                lineNumber?: integer
+                product?:
+                  properties:
+                    id?: 
+                    description?: 
+                requiresAdultSignature?:  boolean
+                comments?: 
+            example:
+              - lineNumber: 1
+                product:
+                  id: s124
+                  description: product description
+                requiresAdultSignature: true
+                comments: adult must sign for item
+              - lineNumber: 2
+                product:
+                  id: s125
+                  description: product description
+                requiresAdultSignature: true
+                comments: adult must sign for item
+      amount?: 
+        type: number
+        example: 300.00
+      insurance:
+        properties:
+          amountInsured: 
+            type: number
+            example: 100.00
+          costs: 
+            type: number
+            example: 3.00
+      status?: 
+        type: ShipmentStatus
+        example: Out for delivery
+      link: links.Link
+  
+  ShipmentUpdate:
+    properties: 
+      dateTime:  datetime
+      status: ShipmentStatus
+      comments?: 
+      additionalInfo?:
+      images: links.Links
+    example:
+      dateTime: 2018-01-01T12:01:02Z
+      status: Package has left seller facility and is in transit to carrier
+      additionalInfo: string
+      images: 
+      - href: http://localhost
+        title: Shipment info
+
+
+  Shipment:
+    properties: 
+      request:  ShipmentRequest
+      trackingUpdates: ShipmentUpdate[]
+    example: !include examples/member.raml
+
+  ShipmentCollection:
+    type:  Shipment[]
+    example: !include examples/collection.raml
+
+  ShipmentCollectionResponse:
+    type: collection.CollectionResponse
+    properties:
+      shipments: 
+        type: Shipment[]
+        required: false
+    example: !include examples/collectionResponse.raml

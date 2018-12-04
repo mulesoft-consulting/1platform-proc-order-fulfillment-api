@@ -1,0 +1,145 @@
+#%RAML 1.0 NamedExample
+- request: 
+    sourceSystem: FedEx
+    carrier: FedEx
+    trackingNumber: 1234567s
+    orderId: "94612"
+    origin: 
+      addressId: 123423423234s
+      type: Home
+      addressLines: 
+        - 1 Market Street
+        - Suite 300
+      city: San Francisco
+      state: CA
+      postalCode: "94105"
+      countryCode: USA
+    destination: 
+      addressId: string
+      type: string
+      addressLines: 
+        - 154 Douglas Fir Drive
+      city: Waleska
+      state: GA
+      postalCode: "30183"
+      countryCode: USA
+    dates: 
+      appointmentDate: 2018-01-01
+      estimatedDeliveryDate: 2018-01-01
+      actualDeliveryDate: 2018-01-01
+    contents: 
+      numberOfPieces: 6
+      totalWeight: 400
+      unitOfMeasure: lbs
+      items:
+        - lineNumber: 1
+          product:
+            id: "1004100"
+            description: Men’s Thunder Jacket
+          requiresAdultSignature: true
+          comments: adult must sign for item
+        - lineNumber: 2
+          product:
+            id: "1806100"
+            description: Men’s Single Track II
+          requiresAdultSignature: true
+          comments: adult must sign for item
+    amount: 1200.00
+    insurance: 
+      amountInsured: 1200.00
+      costs: 60.00
+    status: Shipment departed
+    link: 
+      href: http://localhost
+      title: Tracking Information
+  trackingUpdates: 
+    - dateTime: 2018-01-01T12:01:02Z
+      status: Package has left seller facility and is in transit to carrier
+      additionalInfo: string
+      images: 
+      - href: http://localhost
+        title: string
+    - dateTime: 2018-01-02T15:01:02Z
+      status: Shipment departed
+      additionalInfo: new info
+      images: 
+      - href: http://localhost
+        title: image
+    - dateTime: 2018-01-03T09:01:02Z
+      status: Arrived at a carrier facility
+      additionalInfo: Damaged
+      images: 
+      - href: http://localhost
+        title: damaged photo
+- request: 
+    sourceSystem: UPS
+    carrier: FedEx
+    trackingNumber: 1234567s
+    orderId: "94612"
+    origin: 
+      addressId: 123423423234s
+      type: Home
+      addressLines: 
+        - 1 Market Street
+        - Suite 300
+      city: San Francisco
+      state: CA
+      postalCode: "94105"
+      countryCode: USA
+    destination: 
+      addressId: string
+      type: string
+      addressLines: 
+        - 154 Douglas Fir Drive
+      city: Waleska
+      state: GA
+      postalCode: "30183"
+      countryCode: USA
+    dates: 
+      appointmentDate: 2018-01-01
+      estimatedDeliveryDate: 2018-01-01
+      actualDeliveryDate: 2018-01-01
+    contents: 
+      numberOfPieces: 6
+      totalWeight: 400
+      unitOfMeasure: lbs
+      items:
+        - lineNumber: 1
+          product:
+            id: "1004100"
+            description: Men’s Thunder Jacket
+          requiresAdultSignature: true
+          comments: adult must sign for item
+        - lineNumber: 2
+          product:
+            id: "1806100"
+            description: Men’s Single Track II
+          requiresAdultSignature: true
+          comments: adult must sign for item
+    amount: 1200.00
+    insurance: 
+      amountInsured: 1200.00
+      costs: 60.00
+    status: Shipment departed
+    link: 
+      href: http://localhost
+      title: Tracking Information
+  trackingUpdates: 
+    - dateTime: 2018-01-01T12:01:02Z
+      status: Package has left seller facility and is in transit to carrier
+      additionalInfo: string
+      images: 
+      - href: http://localhost
+        title: string
+    - dateTime: 2018-01-02T15:01:02Z
+      status: Shipment departed
+      additionalInfo: new info
+      images: 
+      - href: http://localhost
+        title: image
+    - dateTime: 2018-01-03T09:01:02Z
+      status: Arrived at a carrier facility
+      additionalInfo: Damaged
+      images: 
+      - href: http://localhost
+        title: damaged photo
