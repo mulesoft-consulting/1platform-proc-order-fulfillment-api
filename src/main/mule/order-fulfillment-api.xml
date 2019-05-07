@@ -414,13 +414,13 @@ vars.orderItems ++
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 fun customRound(value)=value as Number as String {"format": "#.##"}
-var taxValue=p('tax_value')
-var subTotal=sum(vars.orderItems.pricing.totalAmount map $) as Number
-var taxAmount=customRound(subTotal * taxValue)
-var totalAmount=customRound(subTotal + taxAmount)
-var shippingAddress=(vars.customer.postalAddress filter ($."type" == "shipping"))[0]
+var taxValue=p('tax_value') as Number
+var subTotal=customRound(sum(vars.orderItems.pricing.totalAmount map $)) as Number
+var taxAmount=customRound(subTotal * taxValue) as Number
+var totalAmount=customRound(subTotal + taxAmount) as Number
+var shippingAddress=(vars.customer.postalAddresses filter ($."type" == "shipping"))[0]
 ---
-(payload - "orderItems" - "trackingNumber" - "price" - "orderDateTime") ++
+(payload - "orderItems" - "trackingNumber" - "price" - "orderDateTime" - "deliveryAddress") ++
 {
 	orderDateTime: payload.orderDateTime default now(),
 	trackingNumber: vars.originalOrder.trackingNumber default "171b30c3-15ef-4d56-b775-2f4c175a64d0",
@@ -433,9 +433,9 @@ var shippingAddress=(vars.customer.postalAddress filter ($."type" == "shipping")
 		addressId: shippingAddress.addressId default "",
 	    addressLines: shippingAddress default [],
 	    city: shippingAddress.city default "",
-	    countryCode: shippingAddress.countryCode,
-	    postalCode: shippingAddress.postalCode,
-	    state: shippingAddress.state,
+	    countryCode: shippingAddress.countryCode default "",
+	    postalCode: shippingAddress.postalCode default "",
+	    state: shippingAddress.state default "",
 	    "type": "shipping"
 	}
 }
