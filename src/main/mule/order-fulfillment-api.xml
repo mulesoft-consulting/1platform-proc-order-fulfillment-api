@@ -413,10 +413,12 @@ vars.orderItems ++
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
+fun customRound(value)=value as Number as String {"format": "#.##"}
 var taxValue=p('tax_value')
 var subTotal=sum(vars.orderItems.pricing.totalAmount map $) as Number
-var taxAmount=(subTotal * taxValue)
-var totalAmount=subTotal + taxAmount
+var taxAmount=customRound(subTotal * taxValue)
+var totalAmount=customRound(subTotal + taxAmount)
+var shippingAddress=(vars.customer.postalAddress filter ($."type" == "shipping"))[0]
 ---
 (payload - "orderItems" - "trackingNumber" - "price" - "orderDateTime") ++
 {
@@ -426,7 +428,16 @@ var totalAmount=subTotal + taxAmount
 	taxAmount:  taxAmount,
 	subTotal: subTotal,
 	totalAmount: totalAmount,
-	orderItems: vars.orderItems
+	orderItems: vars.orderItems,
+	deliveryAddress: {
+		addressId: shippingAddress.addressId default "",
+	    addressLines: shippingAddress default [],
+	    city: shippingAddress.city default "",
+	    countryCode: shippingAddress.countryCode,
+	    postalCode: shippingAddress.postalCode,
+	    state: shippingAddress.state,
+	    "type": "shipping"
+	}
 }
 ]]></ee:set-payload>
 			</ee:message>
